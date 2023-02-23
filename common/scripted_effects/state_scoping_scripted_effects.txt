@@ -10,6 +10,7 @@
 			exists = scope:$TURMOILVAL$
 			exists = scope:$INFRAVAL$
 			exists = scope:$PLAYERCREDITVAL$
+			exists = scope:$POPULATIONVAL$
 		}
 		set_local_variable = {
 			name = upper_$MARKETACCESSVAL$
@@ -42,28 +43,28 @@
 		set_local_variable = {
 			name = upper_$TAXCAPVAL$
 			value = {
-				add = $TAXCAPVAL$acity
+				add = tax_capacity
 				add = 1
 			}
 		}
 		set_local_variable = {
 			name = lower_$TAXCAPVAL$
 			value = {
-				add = $TAXCAPVAL$acity
+				add = tax_capacity
 				subtract = 1
 			}
 		}
 		set_local_variable = {
 			name = upper_$TAXCAPUSAGEVAL$
 			value = {
-				add = $TAXCAPVAL$acity_usage
+				add = tax_capacity_usage
 				add = 1
 			}
 		}
 		set_local_variable = {
 			name = lower_$TAXCAPUSAGEVAL$
 			value = {
-				add = $TAXCAPVAL$acity_usage
+				add = tax_capacity_usage
 				subtract = 1
 			}
 		}
@@ -127,6 +128,20 @@
 				}
 			}
 		}
+		set_local_variable = {
+			name = upper_$POPULATIONVAL$
+			value = {
+				add = state_population
+				add = 1
+			}
+		}
+		set_local_variable = {
+			name = lower_$POPULATIONVAL$
+			value = {
+				add = state_population
+				subtract = 1
+			}
+		}
 		if = {
 			limit = {
 				# scope:$PLAYERCREDITVAL$ = GetPlayer.GetMaxCredit
@@ -146,6 +161,8 @@
 				exists = local_var:upper_$INFRAVAL$
 				exists = local_var:lower_$PLAYERCREDITVAL$
 				exists = local_var:upper_$PLAYERCREDITVAL$
+				exists = local_var:lower_$POPULATIONVAL$
+				exists = local_var:upper_$POPULATIONVAL$
 				# Check range because of rounding, i think
 				scope:$MARKETACCESSVAL$ >= local_var:lower_$MARKETACCESSVAL$
 				scope:$MARKETACCESSVAL$ <= local_var:upper_$MARKETACCESSVAL$
@@ -163,6 +180,8 @@
 				scope:$INFRAVAL$ <= local_var:upper_$INFRAVAL$
 				scope:$PLAYERCREDITVAL$ >= local_var:lower_$PLAYERCREDITVAL$
 				scope:$PLAYERCREDITVAL$ <= local_var:upper_$PLAYERCREDITVAL$
+				scope:$POPULATIONVAL$ >= local_var:lower_$POPULATIONVAL$
+				scope:$POPULATIONVAL$ <= local_var:upper_$POPULATIONVAL$
 			}
 			save_scope_as = state_clicked_scope
 		}
@@ -185,5 +204,7 @@
 		remove_local_variable = upper_$INFRAVAL$
 		remove_local_variable = lower_$PLAYERCREDITVAL$
 		remove_local_variable = upper_$PLAYERCREDITVAL$
+		remove_local_variable = lower_$POPULATIONVAL$
+		remove_local_variable = upper_$POPULATIONVAL$
 	}
 }
