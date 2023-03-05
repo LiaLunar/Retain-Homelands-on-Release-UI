@@ -1,17 +1,11 @@
 release_without_homelands_mechanic = {
 	scope = country
 	saved_scopes = {
-        player_credit
+        player
     }
 
 	effect = {
-		#c:GBR = { annex = c:PRU }
-		#s:STATE_QUEBEC = {
-		#	start_building_construction = scope:target_building_type
-		#}
-		#c:GBR = { add_treasury = 500000 }
-		scope_into_player_who_clicked = { PLAYERCREDIT = player_credit }
-		scope:player_who_clicked_scope = {
+		scope:player = {
 			limit = {
 				NOT = { has_variable = release_without_homelands_mechanic_active }
 			}
@@ -23,17 +17,11 @@ release_without_homelands_mechanic = {
 release_without_homelands_mechanic_cancel = {
 	scope = country
 	saved_scopes = {
-        player_credit
+        player
     }
 
 	effect = {
-		#c:GBR = { annex = c:PRU }
-		#s:STATE_QUEBEC = {
-		#	start_building_construction = scope:target_building_type
-		#}
-		#c:GBR = { add_treasury = 500000 }
-		scope_into_player_who_clicked = { PLAYERCREDIT = player_credit }
-		scope:player_who_clicked_scope = {
+		scope:player = {
 			remove_variable = release_without_homelands_mechanic_active
 			every_scope_state = {
 				if = {
@@ -67,17 +55,11 @@ release_without_homelands_mechanic_cancel = {
 retain_own_homelands_preview_mechanic = {
 	scope = country
 	saved_scopes = {
-        player_credit
+        player
     }
 
 	effect = {
-		#c:GBR = { annex = c:PRU }
-		#s:STATE_QUEBEC = {
-		#	start_building_construction = scope:target_building_type
-		#}
-		#c:GBR = { add_treasury = 500000 }
-		scope_into_player_who_clicked = { PLAYERCREDIT = player_credit }
-		scope:player_who_clicked_scope = {
+		scope:player = {
 			every_scope_state = {
 				if = {
 					limit = {

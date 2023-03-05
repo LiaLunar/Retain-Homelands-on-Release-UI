@@ -5,7 +5,7 @@ types notifications {
 				name = sound
 				trigger_on_create = yes
 				start_sound = {
-					soundeffect = "[Notification.GetOnCreatedSoundEvent]"
+					soundeffect = "[PlayerMessageItem.GetOnCreatedSoundEvent]"
 				}
 			}
 		}
@@ -14,14 +14,15 @@ types notifications {
 	type default_notification = notification_popup {
 	
 		blockoverride "window_header_name" {
-			text = "[Notification.GetName]"
+			text = "[PlayerMessageItem.GetName]"
 		}
 
 		blockoverride "header_close_button_visibility" {
 			visible = yes
 		}
 		blockoverride "header_close_button" {
-			onclick = "[PopupManager.CloseNotification(Notification.AccessSelf)]"
+			onclick = "[PopupManager.CloseMessage(PlayerMessageItem.AccessSelf)]"
+			shortcut = "close_window"
 		}
 
 		blockoverride "scrollarea_content" {
@@ -35,7 +36,7 @@ types notifications {
 					autoresize = yes
 					maximumsize = { 530 -1 }
 					multiline = yes
-					text = "[Notification.GetDescription]"
+					text = "[PlayerMessageItem.GetDescription]"
 					using = fontsize_large
 				}
 
@@ -53,12 +54,16 @@ types notifications {
 					size = { 200 40 }
 					text = "OK"
 					parentanchor = hcenter
-					onclick = "[PopupManager.CloseNotification(Notification.AccessSelf)]"
+					onclick = "[PopupManager.CloseMessage(PlayerMessageItem.AccessSelf)]"
+					
+					tooltip = "CONFIRM"
+					input_action = "confirm"
 				}
 			}
 		}
 	}
 }
+
 
 ### DIPLOMATIC ACTION NOTIFICATION (WITH AI REASONS)
 default_notification =  {
@@ -67,8 +72,8 @@ default_notification =  {
 	blockoverride "extra_info"
 	{
 		textbox = {
-			visible = "[Not(Notification.GetCountry.IsPlayer)]"
-			datacontext = "[Notification.GetDiplomaticAction]"
+			visible = "[Not(PlayerMessageItem.GetCountry.IsPlayer)]"
+			datacontext = "[PlayerMessageItem.GetDiplomaticAction]"
 			text = "AI_WILL_ACCEPT_BREAKDOWN"
 			autoresize = yes
 			multiline = yes
@@ -104,7 +109,7 @@ notification_popup = {
 		visible = yes
 	}
 	blockoverride "header_close_button" {
-		onclick = "[PopupManager.CloseNotification(Notification.AccessSelf)]"
+		onclick = "[PopupManager.CloseMessage(PlayerMessageItem.AccessSelf)]"
 	}
 
 	blockoverride "scrollarea_content" {
@@ -116,7 +121,7 @@ notification_popup = {
 				margin_bottom = 20
 				using = default_list_position
 				direction = vertical
-				datacontext = "[Notification.GetScopeTechnology]"
+				datacontext = "[PlayerMessageItem.GetScopeTechnology]"
 
 				widget = {
 					parentanchor = hcenter
@@ -366,9 +371,11 @@ notification_popup = {
 			using = default_list_position
 			using = default_button
 			text = "OK"
-			onclick = "[PopupManager.CloseNotification(Notification.AccessSelf)]"
+			onclick = "[PopupManager.CloseMessage(PlayerMessageItem.AccessSelf)]"
 			size = { 280 40 }
-
+			
+			tooltip = "CONFIRM"
+			input_action = "confirm"
 		}
 	}
 }
@@ -385,7 +392,8 @@ notification_popup = {
 		visible = yes
 	}
 	blockoverride "header_close_button" {
-		onclick = "[PopupManager.CloseNotification(Notification.AccessSelf)]"
+		onclick = "[PopupManager.CloseMessage(PlayerMessageItem.AccessSelf)]"
+		shortcut = "close_window"
 	}
 
 	blockoverride "scrollarea_content" {
@@ -405,7 +413,7 @@ notification_popup = {
 			}
 
 			textbox = {
-				text = "[Notification.GetLaw.GetTooltipNoRequirements]"
+				text = "[PlayerMessageItem.GetLaw.GetTooltipNoRequirements]"
 				autoresize = yes
 				multiline = yes
 				maximumsize = { 600 -1 }
@@ -414,7 +422,7 @@ notification_popup = {
 			}
 
 			textbox = {
-				visible = "[Notification.GetPrevLaw.IsValid]"
+				visible = "[PlayerMessageItem.GetPrevLaw.IsValid]"
 				text = "LOST_MODS"
 				autoresize = yes
 				multiline = yes
@@ -422,8 +430,8 @@ notification_popup = {
 			}
 
 			textbox = {
-				visible = "[Notification.GetPrevLaw.IsValid]"
-				text = "[Notification.GetPrevLaw.GetTooltip]"
+				visible = "[PlayerMessageItem.GetPrevLaw.IsValid]"
+				text = "[PlayerMessageItem.GetPrevLaw.GetTooltip]"
 				autoresize = yes
 				multiline = yes
 				maximumsize = { 600 -1 }
@@ -439,7 +447,7 @@ notification_popup = {
 			}
 
 			textbox = {
-				text = "[Notification.GetLaw.GetIGsEnactmentList]"
+				text = "[PlayerMessageItem.GetLaw.GetIGsEnactmentList]"
 				autoresize = yes
 				multiline = yes
 				maximumsize = { 600 -1 }
@@ -461,7 +469,9 @@ notification_popup = {
 			using = default_button
 			size = { 400 40 }
 			text = "OK"
-			onclick = "[PopupManager.CloseNotification(Notification.AccessSelf)]"
+			onclick = "[PopupManager.CloseMessage(PlayerMessageItem.AccessSelf)]"			
+			tooltip = "CONFIRM"
+			input_action = "confirm"
 		}
 	}
 }
@@ -696,10 +706,14 @@ default_popup =  {
 				using = ui_pointer_over
 				size = { 250 42 }
 				text = "CONFIRM"
+
 				onclick = "[Execute(DiplomaticActionWindow.ExecuteAction)]"
 				onclick = "[DiplomaticActionWindow.ShowMapNotification]"
 				onclick = "[PopupManager.HideDiplomaticActionConfirmation]"
 				enabled = "[IsValid(DiplomaticActionWindow.ExecuteAction)]"
+
+				tooltip = "CONFIRM"
+				input_action = "confirm"
 			}
 		}
 	}
@@ -745,20 +759,33 @@ default_popup =  {
 				align = left|top
 				autoresize = yes
 				margin_bottom = 10
-				#text = "gpo_release_country_subject_text"
-				text = "[SelectLocalization( ReleaseCountryWindow.WillMakeIndependent, 'gpo_release_country_independent_text', 'gpo_release_country_subject_text' )]"
+				text = "[ReleaseCountryWindow.GetPopupQuestion]"
+				#text = "[SelectLocalization( ReleaseCountryWindow.WillMakeIndependent, 'gpo_release_country_independent_text', 'gpo_release_country_subject_text' )]"
 			}
-			textbox = {
-				datacontext = "[ReleaseCountryWindow.GetCountryCreation]"
-				minimumsize = { 525 -1 }
-				maximumsize = { 525 -1 }
-				multiline = yes
-				align = left|top
-				autoresize = yes
-				margin_bottom = 10
-				#text = "gpo_release_country_subject_text"
-				text = "[Localize('gpo_release_country_reward')][ReleaseCountryWindow.GetCountryCreation.ListReleasableStates(GetPlayer)]"
-			}
+			#textbox = {
+			#	datacontext = "[ReleaseCountryWindow.GetCountryCreation]"
+			#	minimumsize = { 525 -1 }
+			#	maximumsize = { 525 -1 }
+			#	multiline = yes
+			#	align = left|top
+			#	autoresize = yes
+			#	margin_bottom = 10
+			#	#text = "gpo_release_country_subject_text"
+			#	text = "[Localize('gpo_release_country_reward')]"
+			#}
+			#dynamicgridbox = {
+			#	datamodel = "[GetGlobalList('released_states')]"
+			#	minimumsize = { 525 -1 }
+			#	maximumsize = { 525 -1 }
+			#	item = {
+			#		textbox = {
+			#			multiline = yes
+			#			autoresize = yes
+			#			margin_bottom = 10
+			#			text = "[Scope.GetState.GetName]"
+			#		}
+			#	}
+			#}
 			
 			# Checkbox + textbox: Release Country without own Homelands
 			flowcontainer = {
@@ -771,7 +798,7 @@ default_popup =  {
 					parentanchor = vcenter
 					visible = "[Or(GetVariableSystem.HasValue('will_release_without_homelands', 'off'), Not(GetVariableSystem.Exists('will_release_without_homelands')))]"
 					enabled = yes
-					#onclick = "[ScriptedGui.Execute( GuiScope.AddScope('player_credit',MakeScopeValue(GetPlayer.GetMaxCredit)).End )]"
+					#onclick = "[ScriptedGui.Execute( GuiScope.AddScope('player',GetPlayer.MakeScope).End )]"
 					onclick = "[GetVariableSystem.Set('will_release_without_homelands', 'on')]"
 					checked = "[GetVariableSystem.HasValue('will_release_without_homelands', 'on')]"
 					using = check_button
@@ -783,7 +810,7 @@ default_popup =  {
 					parentanchor = vcenter
 					visible = "[GetVariableSystem.HasValue('will_release_without_homelands', 'on')]"
 					enabled = yes
-					#onclick = "[ScriptedGui.Execute( GuiScope.AddScope('player_credit',MakeScopeValue(GetPlayer.GetMaxCredit)).End )]"
+					#onclick = "[ScriptedGui.Execute( GuiScope.AddScope('player',GetPlayer.MakeScope).End )]"
 					onclick = "[GetVariableSystem.Set('will_release_without_homelands', 'off')]"
 					checked = "[GetVariableSystem.HasValue('will_release_without_homelands', 'on')]"
 					using = check_button
@@ -924,7 +951,7 @@ default_popup =  {
 				visible = "[GetVariableSystem.HasValue('will_release_without_homelands', 'on')]"
 				enabled = "[IsValid(ReleaseCountryWindow.ReleaseCountry)]"
 				onclick = "[GetVariableSystem.Set('will_release_without_homelands', 'off')]"
-				onclick = "[ScriptedGui.Execute( GuiScope.AddScope('player_credit',MakeScopeValue(GetPlayer.GetMaxCredit)).End )]"
+				onclick = "[ScriptedGui.Execute( GuiScope.AddScope('player',GetPlayer.MakeScope).End )]"
 				onclick = "[Execute(ReleaseCountryWindow.ReleaseCountry)]"
 				onclick = "[PopupManager.HideReleaseCountryConfirmation]"
 			}
@@ -958,6 +985,7 @@ default_popup = {
 	}
 	blockoverride "header_close_button" {
 		onclick = "[PopupManager.HideProposal(Proposal.AccessSelf)]"
+		shortcut = "close_window"
 	}
 
 	blockoverride "scrollarea_content"
@@ -1007,6 +1035,7 @@ default_popup = {
 				onclick = "[PopupManager.CloseProposal(Proposal.AccessSelf)]"
 				enabled = "[IsValid(Proposal.GetDiplomaticPlay.RejectSwayOffer(Proposal.GetActor.Self))]"
 				tooltip = "[GetDesc(Proposal.GetDiplomaticPlay.RejectSwayOffer(Proposal.GetActor.Self))]"
+				shortcut = "close_window"
 			}
 
 			button = {
@@ -1018,6 +1047,8 @@ default_popup = {
 				onclick = "[PopupManager.CloseProposal(Proposal.AccessSelf)]"
 				enabled = "[IsValid(Proposal.GetDiplomaticPlay.AcceptSwayOffer(Proposal.GetActor.Self))]"
 				tooltip = "[GetDesc(Proposal.GetDiplomaticPlay.AcceptSwayOffer(Proposal.GetActor.Self))]"
+				
+				input_action = "confirm"
 			}
 		}
 	}
@@ -1036,6 +1067,7 @@ default_popup = {
 	}
 	blockoverride "header_close_button" {
 		onclick = "[PopupManager.HideProposal(Proposal.AccessSelf)]"
+		shortcut = "close_window"
 	}
 
 	blockoverride "scrollarea_content"
@@ -1113,6 +1145,7 @@ default_popup = {
 				using = close_button_sound
 				size = { 250 42 }
 				text = "DECLINE"
+				shortcut = "close_window"
 				onclick = "[Execute(Proposal.GetDiplomaticAction.DeclineActionProposal)]"
 				onclick = "[PopupManager.CloseProposal(Proposal.AccessSelf)]"
 				enabled = "[IsValid(Proposal.GetDiplomaticAction.DeclineActionProposal)]"
@@ -1125,6 +1158,7 @@ default_popup = {
 				using = close_button_sound
 				size = { 250 42 }
 				text = "DECLINE_WARNING"
+				shortcut = "close_window"
 				onclick = "[Execute(Proposal.GetDiplomaticAction.DeclineActionProposal)]"
 				onclick = "[PopupManager.CloseProposal(Proposal.AccessSelf)]"
 				enabled = "[IsValid(Proposal.GetDiplomaticAction.DeclineActionProposal)]"
@@ -1141,6 +1175,8 @@ default_popup = {
 				onclick = "[PopupManager.CloseProposal(Proposal.AccessSelf)]"
 				enabled = "[IsValid(Proposal.GetDiplomaticAction.AcceptActionProposal)]"
 				tooltip = "[GetDesc(Proposal.GetDiplomaticAction.AcceptActionProposal)]"
+
+				input_action = "confirm"
 			}
 		}
 	}
@@ -1159,6 +1195,7 @@ default_popup = {
 	}
 	blockoverride "header_close_button" {
 		onclick = "[PopupManager.HideProposal(Proposal.AccessSelf)]"
+		shortcut = "close_window"
 	}
 
 	blockoverride "scrollarea_content"
@@ -1194,6 +1231,7 @@ default_popup = {
 				onclick = "[PopupManager.CloseProposal(Proposal.AccessSelf)]"
 				enabled = "[IsValid(Proposal.GetDiplomaticAction.DeclineActionProposal)]"
 				tooltip = "[GetDesc(Proposal.GetDiplomaticAction.DeclineActionProposal)]"
+				shortcut = "close_window"
 			}
 
 			button = {
@@ -1205,6 +1243,8 @@ default_popup = {
 				onclick = "[PopupManager.CloseProposal(Proposal.AccessSelf)]"
 				enabled = "[IsValid(Proposal.GetDiplomaticAction.AcceptActionProposal)]"
 				tooltip = "[GetDesc(Proposal.GetDiplomaticAction.AcceptActionProposal)]"
+				
+				input_action = "confirm"
 			}
 		}
 	}
@@ -1247,6 +1287,8 @@ default_popup =  {
 			direction = vertical
 			margin_top = 10
 			margin_bottom = 15
+			margin_left = 20
+			margin_right = 20
 
 			textbox = {
 				maximumsize = { 525 -1 }
@@ -1283,6 +1325,9 @@ default_popup =  {
 				onclick = "[DiplomaticPlayConfirmation.ShowMapNotification]"
 				onclick = "[PopupManager.HideDiplomaticPlayConfirmation]"
 				enabled = "[IsValid(DiplomaticPlayConfirmation.ConfirmAction)]"
+				input_action = "confirm"
+				
+				tooltip = "CONFIRM"		
 			}
 		}
 	}
@@ -1352,6 +1397,9 @@ container =  {
 				size = { 140 40 }
 				text = "CONFIRM_YES"
 				onclick = "[PopupManager.AnswerYes(ConfirmationWindow.Self)]"
+				
+				tooltip = "CONFIRM"
+				input_action = "confirm"
 			}
 		}
 	}
@@ -1419,6 +1467,9 @@ container =  {
 				size = { 140 40 }
 				text = "CONFIRM_YES"
 				onclick = "[FrontEndLoadConfirmationWindow.AnswerYes]"
+				
+				tooltip = "CONFIRM"
+				input_action = "confirm"
 			}
 		}
 	}
@@ -1443,7 +1494,7 @@ notification_popup = {
 	size = { 190 720 }
 	alpha = 0
 	blockoverride "content" {}
-	datacontext = "[Notification.GetDiploPlay.AccessWar]"
+	datacontext = "[PlayerMessageItem.GetDiploPlay.AccessWar]"
 
 	state = {
 		name = start
@@ -2066,7 +2117,7 @@ notification_popup = {
 			size = { 100% 100% }
 			text = "TO_ARMS"
 			using = fontsize_xxl
-			onclick = "[PopupManager.CloseNotification(Notification.AccessSelf)]"
+			onclick = "[PopupManager.CloseMessage(PlayerMessageItem.AccessSelf)]"
 			shortcut = "close_window"
 			alpha = 0
 			using = war_to_arms_button_sound
@@ -2347,7 +2398,7 @@ notification_popup = {
 notification_popup = {
 	name = "peace_signed_popup"
 	using = default_fade_in
-	datacontext = "[Notification.GetScopeDiploPlay]"
+	datacontext = "[PlayerMessageItem.GetScopeDiploPlay]"
 
 	blockoverride "window_header_name" {
 		text = "PEACE_TOAST_TITLE"
@@ -2357,7 +2408,8 @@ notification_popup = {
 		visible = yes
 	}
 	blockoverride "header_close_button" {
-		onclick = "[PopupManager.CloseNotification(Notification.AccessSelf)]"
+		onclick = "[PopupManager.CloseMessage(PlayerMessageItem.AccessSelf)]"
+		shortcut = "close_window"
 	}
 
 	blockoverride "scrollarea_content" {
@@ -2452,8 +2504,11 @@ notification_popup = {
 			using = default_list_position
 			using = default_button
 			text = "OK"
-			onclick = "[PopupManager.CloseNotification(Notification.AccessSelf)]"
+			onclick = "[PopupManager.CloseMessage(PlayerMessageItem.AccessSelf)]"
 			size = { 610 40 }
+			
+			tooltip = "CONFIRM"
+			input_action = "confirm"
 		}
 	}
 }
@@ -2462,8 +2517,8 @@ notification_popup = {
 notification_popup = {
 	name = "capitulation_popup"
 	using = default_fade_in
-	datacontext = "[Notification.GetScopeDiploPlay]"
-	datacontext = "[Notification.GetScopeTargetCountry]"
+	datacontext = "[PlayerMessageItem.GetScopeDiploPlay]"
+	datacontext = "[PlayerMessageItem.GetScopeTargetCountry]"
 
 	blockoverride "window_header_name" {
 		text = "CAPITULATION_TITLE"
@@ -2473,7 +2528,8 @@ notification_popup = {
 		visible = yes
 	}
 	blockoverride "header_close_button" {
-		onclick = "[PopupManager.CloseNotification(Notification.AccessSelf)]"
+		onclick = "[PopupManager.CloseMessage(PlayerMessageItem.AccessSelf)]"
+		shortcut = "close_window"
 	}
 
 	blockoverride "scrollarea_content" {
@@ -2512,8 +2568,11 @@ notification_popup = {
 			using = default_button
 			using = default_button_sound
 			text = "OK"
-			onclick = "[PopupManager.CloseNotification(Notification.AccessSelf)]"
+			onclick = "[PopupManager.CloseMessage(PlayerMessageItem.AccessSelf)]"
 			size = { 610 40 }
+			
+			tooltip = "CONFIRM"
+			input_action = "confirm"
 		}
 	}
 }
@@ -2648,6 +2707,8 @@ default_popup = {
 					tooltip = "[GetDesc( Country.MobilizeAllGenerals )]"
 					size = { 200 40 }
 					text = "CONFIRM_YES"
+					
+					input_action = "confirm"
 				}
 			}
 		}
